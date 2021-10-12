@@ -1,0 +1,13 @@
+{
+  "dbpath":"db",
+  "microservice":{
+    "title":"nytimes",
+    "domain":"cn.nytimes.com",
+    "url":[
+      "https://cn.nytimes.com/rss/"
+    ],
+    "addr":":10006",
+    "timeout":"1s",
+    "heartbeat":"5m"
+  }
+}
