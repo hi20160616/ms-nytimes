@@ -14,8 +14,8 @@ func TestFetchTitle(t *testing.T) {
 		url   string
 		title string
 	}{
-		{"https://cn.nytimes.com/politicsaeconomy/economic-policy/46246-2021-10-05-10-19-13.html?tmpl=component&print=1&page=", "岸田经济安保政策的核心是半导体供应"},
-		{"http://cn.nytimes.com/politicsaeconomy/politicsasociety/46303-2021-10-11-15-24-32.html?tmpl=component&print=1&page=", "岸田文雄表示“暂时不碰”金融所得征税"},
+		{"https://cn.nytimes.com/china/20211011/china-child-custody-abductions/?utm_source=RSS", "监护权争夺战：那些绑架自己孩子的中国家长"},
+		{"https://cn.nytimes.com/asia-pacific/20201201/north-korea-pandemic-china/", "疫情进一步冲击对华贸易，朝鲜经济困境加深"},
 	}
 	for _, tc := range tests {
 		a := NewArticle()
@@ -50,8 +50,8 @@ func TestFetchUpdateTime(t *testing.T) {
 		url  string
 		want string
 	}{
-		{"https://cn.nytimes.com/politicsaeconomy/economic-policy/46246-2021-10-05-10-19-13.html?tmpl=component&print=1&page=", "2021-10-05 18:19:13 +0800 UTC"},
-		{"http://cn.nytimes.com/politicsaeconomy/politicsasociety/46303-2021-10-11-15-24-32.html?tmpl=component&print=1&page=", "2021-10-11 23:24:32 +0800 UTC"},
+		{"https://cn.nytimes.com/china/20211011/china-child-custody-abductions/?utm_source=RSS", "2021-10-11 17:41:03 +0800 UTC"},
+		{"https://cn.nytimes.com/asia-pacific/20201201/north-korea-pandemic-china/", "2020-12-01 19:04:20 +0800 UTC"},
 	}
 	var err error
 	for _, tc := range tests {
@@ -84,8 +84,8 @@ func TestFetchContent(t *testing.T) {
 		url  string
 		want string
 	}{
-		{"https://cn.nytimes.com/politicsaeconomy/economic-policy/46246-2021-10-05-10-19-13.html?tmpl=component&print=1&page=", "aaa"},
-		{"http://cn.nytimes.com/politicsaeconomy/politicsasociety/46303-2021-10-11-15-24-32.html?tmpl=component&print=1&page=", "bbb"},
+		{"https://cn.nytimes.com/china/20211011/china-child-custody-abductions/?utm_source=RSS", "监护权争夺战：那些绑架自己孩子的中国家长"},
+		// {"https://cn.nytimes.com/asia-pacific/20201201/north-korea-pandemic-china/", "疫情进一步冲击对华贸易，朝鲜经济困境加深"},
 	}
 	var err error
 
@@ -104,7 +104,6 @@ func TestFetchContent(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		fmt.Println("ssssssssss")
 		fmt.Println(c)
 	}
 }
@@ -114,8 +113,8 @@ func TestFetchArticle(t *testing.T) {
 		url string
 		err error
 	}{
-		{"https://cn.nytimes.com/politicsaeconomy/economic-policy/46246-2021-10-05-10-19-13.html?tmpl=component&print=1&page=", ErrTimeOverDays},
-		{"http://cn.nytimes.com/politicsaeconomy/politicsasociety/46303-2021-10-11-15-24-32.html?tmpl=component&print=1&page=", nil},
+		{"https://cn.nytimes.com/china/20211011/china-child-custody-abductions/?utm_source=RSS", ErrTimeOverDays},
+		{"https://cn.nytimes.com/asia-pacific/20201201/north-korea-pandemic-china/", nil},
 	}
 	for _, tc := range tests {
 		a := NewArticle()

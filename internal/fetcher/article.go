@@ -1,6 +1,7 @@
 package fetcher
 
 import (
+	"bytes"
 	"crypto/md5"
 	"fmt"
 	"log"
@@ -163,7 +164,7 @@ func (a *Article) fetchTitle() (string, error) {
 			configs.Data.MS.Title)
 	}
 	title := n[0].FirstChild.Data
-	rp := strings.NewReplacer("  日经中文网", "")
+	rp := strings.NewReplacer(" - 纽约时报中文网", "")
 	title = strings.TrimSpace(rp.Replace(title))
 	return gears.ChangeIllegalChar(title), nil
 }
@@ -175,13 +176,21 @@ func (a *Article) fetchUpdateTime() (*timestamppb.Timestamp, error) {
 	}
 
 	t := time.Now() // if no time fetched, return current time
-	re := regexp.MustCompile(`.+?/\d+-(.+?).html\?.+`)
-	rs := re.FindStringSubmatch(a.U.String())
 	var err error
-	if len(rs) != 0 {
-		t, err = time.Parse("2006-01-02-15-04-05", rs[1])
-		if err != nil {
-			return nil, errors.WithMessage(err, "no matched meta contains published_time")
+	n := exhtml.MetasByName(a.doc, "date")
+	if len(n) == 0 {
+		return nil, fmt.Errorf("[%s] fetchUpdateTime error, no meta named date matched: %s",
+			configs.Data.MS.Title, a.U.String())
+	}
+	for _, nn := range n {
+		for _, x := range nn.Attr {
+			if x.Key == "content" {
+				t, err = time.Parse(time.RFC3339, x.Val)
+				if err != nil {
+					return nil, errors.WithMessage(err,
+						"caught meta but no content matched.")
+				}
+			}
 		}
 	}
 
@@ -201,20 +210,35 @@ func (a *Article) fetchContent() (string, error) {
 		return "", errors.Errorf("[%s] fetchContent: doc is nil: %s", configs.Data.MS.Title, a.U.String())
 	}
 	body := ""
-	bodyN := exhtml.ElementsByTagAndId(a.doc, "div", "contentDiv")
+	bodyN := exhtml.ElementsByTagAndClass(a.doc, "section", "article-body")
 	if len(bodyN) == 0 {
 		return body, errors.Errorf("no article content matched: %s", a.U.String())
 	}
 	// Fetch content
-	plist := exhtml.ElementsByTag(bodyN[0], "p")
-	for _, v := range plist {
+	ps := exhtml.ElementsByTagAndClass(bodyN[0], "div", "article-paragraph")
+	for _, v := range ps {
+		var buf bytes.Buffer
 		if v.FirstChild == nil {
 			continue
 		}
-		data := strings.TrimSpace(v.FirstChild.Data)
-		if data != "" && data != "span" {
-			body += gears.ChangeIllegalChar(data) + "  \n"
+		// skip figure paragraph
+		if v.FirstChild.Type == html.ElementNode && v.FirstChild.Data == "figure" {
+			continue
 		}
+		if err := html.Render(&buf, v); err != nil {
+			err = fmt.Errorf("render node to bytes error: %s", a.U.String())
+			continue
+		}
+		re := regexp.MustCompile(`(?m)<div.*?>(?P<paragraph>.*?)</div>`)
+		x := re.ReplaceAllString(buf.String(), "${paragraph}  \n")
+
+		re = regexp.MustCompile(`(?m)<span>(?P<span>.*?)</span>`)
+		x = re.ReplaceAllString(x, "${span}")
+
+		re = regexp.MustCompile(`(?m)<a.*?href="(?P<href>.*)".*?>(?P<title>.*?)</a>`)
+		x = re.ReplaceAllString(x, "[${title}](${href})")
+
+		body += x
 	}
 	return body, nil
 }
