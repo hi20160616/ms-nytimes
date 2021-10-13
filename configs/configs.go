@@ -34,8 +34,8 @@ func setRootPath() error {
 	var root string
 	var err error
 	if strings.Contains(os.Args[0], ".test") {
-		// root = "../../" // for test dbmanager
-		root = "../" // for test configs
+		root = "../../" // for test dbmanager
+		// root = "../" // for test configs
 	} else {
 		root, err = os.Getwd()
 		if err != nil {

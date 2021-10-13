@@ -18,3 +18,15 @@ func TestListArticles(t *testing.T) {
 		fmt.Println(e)
 	}
 }
+
+func TestGetArticle(t *testing.T) {
+	s := &Server{}
+	ss, err := s.GetArticle(
+		context.Background(),
+		&v1.GetArticleRequest{Id: "03418273947128734"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(ss.Title)
+}
