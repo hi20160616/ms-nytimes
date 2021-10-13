@@ -1,13 +1,6 @@
 {
-  "dbpath":"db",
-  "microservice":{
-    "title":"nytimes",
-    "domain":"cn.nytimes.com",
-    "url":[
-      "https://cn.nytimes.com/rss/"
-    ],
-    "addr":":10006",
-    "timeout":"1s",
-    "heartbeat":"5m"
-  }
+  "debug":false,
+  "verbose":false,
+  "gist": "https://gist.githubusercontent.com/hi20160616/277faf779bee0d0d1525696eff6e8b56/raw/configs.json",
+  "dbpath":"db"
 }

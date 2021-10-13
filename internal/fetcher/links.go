@@ -15,7 +15,7 @@ import (
 func fetchLinks() ([]string, error) {
 	rt := []string{}
 
-	for _, rawurl := range configs.Data.MS.URL {
+	for _, rawurl := range configs.Data.MS["nytimes"].URL {
 		links, err := getLinksRss(rawurl)
 		if err != nil {
 			return nil, err
@@ -51,7 +51,7 @@ func getLinksRss(rawurl string) ([]string, error) {
 	}
 	if links, err := exhtml.ExtractRss(u.String()); err != nil {
 		return nil, errors.WithMessagef(err, "[%s] cannot extract links from %s",
-			configs.Data.MS.Title, rawurl)
+			configs.Data.MS["nytimes"].Title, rawurl)
 	} else {
 		return gears.StrSliceDeDupl(links), nil
 	}
@@ -64,7 +64,7 @@ func getLinks(rawurl string) ([]string, error) {
 	}
 	if links, err := exhtml.ExtractLinks(u.String()); err != nil {
 		return nil, errors.WithMessagef(err, "[%s] cannot extract links from %s",
-			configs.Data.MS.Title, rawurl)
+			configs.Data.MS["nytimes"].Title, rawurl)
 	} else {
 		return gears.StrSliceDeDupl(links), nil
 	}
