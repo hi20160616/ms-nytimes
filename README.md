@@ -52,6 +52,10 @@ go mod tidy
 ```
 go mod tidy
 ```
+cmd history
+```
+sed -i '' 's/configs.Data.MS/configs.Data.MS["zaobao"]/g' ./internal/*/* ./cmd/*/*
+```
 
 # TODO
 
